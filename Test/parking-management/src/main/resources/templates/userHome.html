@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layouts/userlayout" th:with="activeTab='userhom'">
+<head>
+<title>Home</title>
+<script type="text/javascript" th:src="@{/js/reset.js}"></script>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div th:replace="fragments/alert :: alert"></div>
+		<div class="jumbotron jumbotron-fluid element">
+			<h1>Open Slots</h1>
+			<table class="table table-striped">
+				<thead>
+					<th scope="row">#ID</th>
+					<th scope="row">Name</th>
+					<th scope="row">Area</th>
+					<th scope="row">Count</th>
+					<th scope="row">Price</th>
+					<th scope="row">From</th>
+					<th scope="row">To</th>
+					<th scope="row">Book</th>
+				</thead>
+				<tbody>
+					<tr th:each="entry : ${entries}">
+						<td th:text="${entry.id}"></td>
+						<td th:text="${entry.parkingName}"></td>
+						<td th:text="${entry.area}"></td>
+						<td th:text="${entry.count}"></td>
+						<td th:text="${entry.price}"></td>
+						<td th:text="${#dates.format(entry.fromDate, 'dd-MMM-yyyy')}"></td>
+						<td th:text="${#dates.format(entry.toDate, 'dd-MMM-yyyy')}"></td>
+						<td><a class="btn btn-primary" th:if="${entry.count != 0}"
+							th:href="@{/book/__${entry.id}__}" role="button">Book</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

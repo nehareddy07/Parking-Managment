@@ -1,0 +1,122 @@
+package com.parking.booking;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.parking.entry.Entry;
+import com.parking.entry.EntryRepository;
+import com.parking.user.User;
+import com.parking.user.UserRepository;
+
+@RestController
+@RequestMapping("booking")
+public class BookingController {
+
+	@Autowired
+	private BookingRepository repository;
+
+	@Autowired
+	private EntryRepository entryRepository;
+
+	@Autowired
+	private JavaMailSender javaMailSender;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@GetMapping
+	public ResponseEntity<List<Booking>> get() {
+		return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<Booking> get(@PathVariable Long id) {
+		return new ResponseEntity<>(repository.findOne(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/user/{id}")
+	public ResponseEntity<List<Booking>> getByUse(@PathVariable Long id) {
+		return new ResponseEntity<>(repository.findByUserId(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/count")
+	public ResponseEntity<Map<String, Long>> count() {
+		Map<String, Long> count = new HashMap<String, Long>();
+		List<Booking> d = repository.findAll();
+		count.put("bookings", Long.valueOf(d.size()));
+		long count1 = 0;
+		for (Booking ele : d) {
+			count1 = ele.getAmount() + count1;
+		}
+		count.put("amount", count1);
+		count.put("slots", Long.valueOf(entryRepository.findAll().size()));
+		return new ResponseEntity<>(count, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		repository.delete(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PostMapping("/{entryId}/{userId}")
+	public String add(@PathVariable Long entryId, @PathVariable Long userId, Model model) {
+
+		Entry entry = entryRepository.findOne(entryId);
+		Booking booking = new Booking();
+		booking.setAmount(entry.getPrice());
+		booking.setCheckIn(entry.getFromDate());
+		booking.setCheckOut(entry.getToDate());
+		booking.setEntryId(entry.getId());
+		booking.setUserId(userId);
+		booking = repository.save(booking);
+		int count = entry.getCount() - 1;
+		if (count < 0) {
+			entryRepository.delete(entry);
+		} else {
+			entry.setCount(count);
+			entryRepository.save(entry);
+		}
+		sendEmail(booking);
+		List<Booking> bookings = repository.findByUserId(userId);
+		model.addAttribute("bookings", bookings);
+		return "mybookings";
+	}
+
+	private int sendEmail(Booking booking) {
+
+		User user = userRepository.getOne(booking.getUserId());
+
+		try {
+			MimeMessage ms = javaMailSender.createMimeMessage();
+			MimeMessageHelper msg = new MimeMessageHelper(ms, true);
+			msg.setTo(user.getEmail());
+			msg.setFrom("parkingmanagmentsys@gmail.com");
+
+			msg.setSubject("Booking Conformation!!");
+			msg.setText("Thanks for the Booking! \n Your booking has been confirmed with id: " + booking.getId(), true);
+
+			javaMailSender.send(ms);
+		} catch (MessagingException e) {
+		}
+
+		return 0;
+	}
+}

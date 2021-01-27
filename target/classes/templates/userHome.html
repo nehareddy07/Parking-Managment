@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/userlayout" th:with="activeTab='userhom'">
+<head>
+    <title>Home</title>
+    <script type="text/javascript" th:src="@{/js/reset.js}"></script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div th:replace="fragments/alert :: alert"></div>
+    <div class="jumbotron jumbotron-fluid element">
+        <h1>Open Slots</h1>
+          <table class="table table-striped">
+        <thead>
+        <th scope="row">#ID</th>
+        <th scope="row">Name</th>
+        <th scope="row">Area</th>
+        <th scope="row">Count</th>
+        <th scope="row">Price</th>
+        <th scope="row">Book</th>
+        </thead>
+        <tbody>
+            <tr th:each="course : ${entries}">
+                <td th:text="${course.id}"></td>
+                <td th:text="${course.parkingName}"></td>
+                <td th:text="${course.area}"></td>
+                <td th:text="${course.count}"></td>
+                <td th:text="${course.price}"></td>
+                <td>
+                    <a class="btn btn-primary" th:href="@{/book/__${course.id}__}" role="button" >Book</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+</body>
+</html>

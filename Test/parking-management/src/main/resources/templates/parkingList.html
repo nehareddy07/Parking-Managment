@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layouts/layout" th:with="activeTab='entries'">
+<head>
+<title>statistics</title>
+<script type="text/javascript" th:src="@{/js/reset.js}"></script>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div th:replace="fragments/alert :: alert"></div>
+		<div class="jumbotron jumbotron-fluid element">
+			<h2>Slots</h2>
+			<a class="btn btn-primary" th:href="@{/add}" role="button">Add</a>
+			<table class="table table-striped">
+				<thead>
+					<th scope="row">#ID</th>
+					<th scope="row">Name</th>
+					<th scope="row">Area</th>
+					<th scope="row">Count</th>
+					<th scope="row">Price</th>
+					<th scope="row">From</th>
+					<th scope="row">To</th>
+					<th scope="row">Delete</th>
+				</thead>
+				<tbody>
+					<tr th:each="course : ${entries}">
+						<td th:text="${course.id}"></td>
+						<td th:text="${course.parkingName}"></td>
+						<td th:text="${course.area}"></td>
+						<td th:text="${course.count}"></td>
+						<td th:text="${course.price}"></td>
+						<td th:text="${#dates.format(course.fromDate, 'dd-MMM-yyyy')}"></td>
+						<td th:text="${#dates.format(course.toDate, 'dd-MMM-yyyy')}"></td>
+						<td>
+							<button class="btn btn-primary" id="delete" role="button">Delete</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

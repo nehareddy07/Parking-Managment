@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layouts/layout" th:with="activeTab='bookings'">
+<head>
+<title>statistics</title>
+<script type="text/javascript" th:src="@{/js/reset.js}"></script>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div th:replace="fragments/alert :: alert"></div>
+		<div class="jumbotron jumbotron-fluid element">
+			<h2>Bookings</h2>
+			<table class="table table-striped">
+				<thead>
+					<th scope="row">#ID</th>
+					<th scope="row">User</th>
+					<th scope="row">Car Number</th>
+					<th scope="row">License</th>
+					<th scope="row">CheckIn</th>
+					<th scope="row">CheckOut</th>
+					<th scope="row">Price</th>
+				</thead>
+				<tbody>
+					<tr th:each="booking : ${bookings}">
+						<td th:text="${booking.id}"></td>
+						<td th:text="${booking.user.firstName}"></td>
+						<td th:text="${booking.user.carNumber}"></td>
+						<td th:text="${booking.user.license}"></td>
+						<td th:text="${#dates.format(booking.checkIn, 'dd-MMM-yyyy')}"></td>
+						<td th:text="${#dates.format(booking.checkOut, 'dd-MMM-yyyy')}"></td>
+						<td th:text="${booking.amount}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

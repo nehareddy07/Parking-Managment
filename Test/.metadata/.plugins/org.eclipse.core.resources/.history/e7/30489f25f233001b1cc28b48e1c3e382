@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layouts/userlayout" th:with="activeTab='userhom'">
+<head>
+<title>Checkout</title>
+<style>
+body {
+	font-family: 'arial';
+}
+
+#checkout-form input, #checkout-form button {
+	display: block;
+	margin: 12px;
+}
+</style>
+<script type="text/javascript" th:src="@{/js/checkout.js}"></script>
+
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="jumbotron jumbotron-fluid element">
+			<form action='/charge' method='POST' id='checkout-form'>
+
+				<input id="api-key" type="hidden" th:value="${stripePublicKey}" />
+				<input id="entryId" name="entryId" type="hidden"
+					th:value="${entry.id}" /> <input id="userId" name="userId"
+					type="hidden" /> <input id="code" name="code" type="hidden"
+					th:value="${entry.code}" />
+
+				<div class="form-label-group">
+					<label for="license">Price</label> <input type="text" id="area"
+						th:value='${entry.price}' class="form-control" disabled="true" />
+				</div>
+				<div class="form-label-group">
+					<label for="license">Area</label> <input type="text" id="area"
+						th:value='${entry.area}' class="form-control" disabled="true" />
+				</div>
+				<div class="form-label-group">
+					<label for="parkingName">Name</label> <input type="text"
+						th:value='${entry.parkingName}' id="parkingName"
+						class="form-control" disabled="true" />
+				</div>
+				<div class="form-label-group">
+					<label for="code">Code</label> <input type="text" id="codeId"
+						class="form-control" />
+				</div>
+
+
+				<!-- NOTE: data-key/data-amount/data-currency will be rendered by Thymeleaf -->
+				<script src='https://checkout.stripe.com/checkout.js'
+					class='stripe-button'
+					th:attr='data-key=${stripePublicKey},
+                         data-amount=${entry.price},
+                         data-currency=${currency}'
+					data-name='Parking Management'
+					data-description='Pay for the parking'
+					data-image='https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Parking_icon.svg/1024px-Parking_icon.svg.png'
+					data-locale='auto' data-zip-code='false'>
+					
+				</script>
+			</form>
+			<button class="btn btn-lg btn-primary btn-block" id="book" onclick="add()"
+				style="margin-top: 20px; background-color: #050454; display: none">Book</button>
+		</div>
+	</div>
+</body>
+</html>

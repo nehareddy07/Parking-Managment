@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layouts/userlayout" th:with="activeTab='userhom'">
+<head>
+<title>Checkout</title>
+<style>
+body {
+	font-family: 'arial';
+}
+
+#checkout-form input, #checkout-form button {
+	display: block;
+	margin: 12px;
+}
+</style>
+</head>
+<body>
+	<div layout:fragment="content">
+		<form action='/charge' method='POST' id='checkout-form'>
+
+			<div class="form-label-group">
+				<label for="license">Price</label> <input type="text" id="area"
+					th:value='${amount/100}' class="form-control" disabled="true" />
+			</div>
+			<div class="form-label-group">
+				<label for="license">Area</label> <input type="text" id="area"
+					th:value='${entry.area}' class="form-control" disabled="true" />
+			</div>
+			<div class="form-label-group">
+				<label for="parkingName">Name</label> <input type="text"
+					th:value='${entry.parkingName}' id="parkingName" class="form-control"
+					disabled="true" />
+			</div>
+
+			<!-- NOTE: data-key/data-amount/data-currency will be rendered by Thymeleaf -->
+			<script src='https://checkout.stripe.com/checkout.js'
+				class='stripe-button'
+				th:attr='data-key=${stripePublicKey},
+                         data-amount=${amount},
+                         data-currency=${currency}'
+				data-name='Parking Management'
+				data-description='Pay for the parking'
+				data-image='https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Parking_icon.svg/1024px-Parking_icon.svg.png'
+				data-locale='auto' data-zip-code='false'>
+				
+			</script>
+		</form>
+	</div>
+</body>
+</html>
